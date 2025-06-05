@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Task Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 40px auto;
+      background: #f9f9f9;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #new-task-form {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    #new-task-input {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #add-task-btn {
+      margin-left: 8px;
+      padding: 8px 16px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+    }
+    ul#task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    ul#task-list li {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    ul#task-list li.completed span.task-title {
+      text-decoration: line-through;
+      color: #999;
+    }
+    span.task-title {
+      flex: 1;
+      margin-left: 8px;
+    }
+    button.delete-btn {
+      background: transparent;
+      border: none;
+      color: #d9534f;
+      font-size: 20px;
+      cursor: pointer;
+      margin-left: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Task Manager</h1>
+
+  <form id="new-task-form">
+    <input type="text" id="new-task-input" placeholder="New task..." autocomplete="off" />
+    <button type="submit" id="add-task-btn">Add</button>
+  </form>
+
+  <ul id="task-list"></ul>
+
+  <script>
+    // Hardcoded initial tasks
+    let tasks = [
+      { id: 1, title: 'Buy groceries', completed: false },
+      { id: 2, title: 'Read a book', completed: true },
+    ];
+
+    const taskList = document.getElementById('task-list');
+    const newTaskInput = document.getElementById('new-task-input');
+    const newTaskForm = document.getElementById('new-task-form');
+
+    // Render the list of tasks
+    function renderTasks() {
+      taskList.innerHTML = '';
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.className = task.completed ? 'completed' : '';
+
+        // Checkbox
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.completed;
+        checkbox.addEventListener('change', () => toggleComplete(task.id));
+
+        // Task title
+        const span = document.createElement('span');
+        span.textContent = task.title;
+        span.className = 'task-title';
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '×';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.addEventListener('click', () => deleteTask(task.id));
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(deleteBtn);
+
+        taskList.appendChild(li);
+      });
+    }
+
+    // Toggle completed status
+    function toggleComplete(id) {
+      tasks = tasks.map(task =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      );
+      renderTasks();
+    }
+
+    // Delete task
+    function deleteTask(id) {
+      tasks = tasks.filter(task => task.id !== id);
+      renderTasks();
+    }
+
+    // Add new task
+    function addTask(title) {
+      if (!title.trim()) return;
+      const newTask = {
+        id: tasks.length ? tasks[tasks.length - 1].id + 1 : 1,
+        title: title.trim(),
+        completed: false,
+      };
+      tasks.push(newTask);
+      renderTasks();
+    }
+
+    // Event listeners
+    newTaskForm.addEventListener('submit', e => {
+      e.preventDefault();
+      addTask(newTaskInput.value);
+      newTaskInput.value = '';
+    });
+
+    // Initial render
+    renderTasks();
+  </script>
+</body>
+</html>
